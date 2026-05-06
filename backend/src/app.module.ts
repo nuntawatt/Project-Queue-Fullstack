@@ -1,25 +1,31 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { QueueModule } from './queue/queue.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import configuration from './config/configuration';
+import { RedisModule } from './redis/redis.module';
+import { EventBusModule } from './gateways/event-bus.module';
+import { JobsModule } from './jobs/jobs.module';
+import { WorkersModule } from './workers/workers.module';
+import { DlqModule } from './dlq/dlq.module';
+import { MetricsModule } from './metrics/metrics.module';
+import { ApiKeyGuard } from './common/guards/api-key.guard';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [__dirname + '/**/*.entity.{js,ts}'],
-      autoLoadEntities: true,
-      synchronize: true, // Should be false in production
-    }),
-    QueueModule,
+    ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+    RedisModule,
+    EventBusModule,
+    JobsModule,
+    WorkersModule,
+    DlqModule,
+    MetricsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    { provide: APP_GUARD, useClass: ApiKeyGuard },
+    { provide: APP_FILTER, useClass: HttpExceptionFilter },
+    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+  ],
 })
 export class AppModule {}
