@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --color-bg: #08090C;
+  --color-surface: #0F1117;
+  --color-elev: #161820;
+  --color-border: #1F2230;
+  --color-border-hi: #2A2D3E;
+  --color-muted: #5A6078;
+  --color-amber: #F59E0B;
+  --color-emerald: #10B981;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+}
+
+:root {
+  --bg:        #08090C;
+  --surface:   #0F1117;
+  --elevated:  #161820;
+  --border:    #1F2230;
+  --border-hi: #2A2D3E;
+  --text:      #DDE1F0;
+  --muted:     #5A6078;
+  --amber:     #F59E0B;
+  --green:     #10B981;
+  --red:       #EF4444;
+  --blue:      #3B82F6;
+  --purple:    #8B5CF6;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
+
+/* mono font helper */
+.mono { font-family: 'IBM Plex Mono', monospace; }
+
+/* live pulse */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+.pulse { animation: pulse-dot 1.4s ease-in-out infinite; }
+
+/* slide-in row */
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.row-enter { animation: slide-in 0.18s ease; }
+
+/* fade in */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.fade-in { animation: fade-in 0.25s ease; }
