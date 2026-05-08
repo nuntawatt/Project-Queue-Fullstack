@@ -8,8 +8,6 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
-# Copy workspace config if applicable, but we only copy backend's lockfile
-# Actually, if the lockfile is at the root we'd need it. Assuming backend is standalone.
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile --ignore-scripts
