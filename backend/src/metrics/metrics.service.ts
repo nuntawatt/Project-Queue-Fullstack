@@ -42,7 +42,7 @@ export class MetricsService {
         total: Object.values(queueDepth).reduce(
           (a: number, b: number) => a + b,
           0,
-        ) as number,
+        ),
       },
       dlq: { count: dlqCount },
       workers: this.pool.getStatus(),

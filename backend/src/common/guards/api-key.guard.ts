@@ -20,6 +20,7 @@ export class ApiKeyGuard implements CanActivate {
     const actualKey = Buffer.from(Array.isArray(key) ? key[0] : (key ?? ''));
 
     if (
+      expectedKey.length === 0 ||
       expectedKey.length !== actualKey.length ||
       !timingSafeEqual(expectedKey, actualKey)
     ) {

@@ -3,6 +3,7 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { AppModule } from './app.module';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,8 @@ async function bootstrap() {
   app.enableCors({
     origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
   });
+  app.use(helmet());
+  app.enableShutdownHooks();
 
   app.useGlobalPipes(
     new ValidationPipe({

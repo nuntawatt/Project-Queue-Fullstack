@@ -18,10 +18,11 @@ export class JobsService {
     private readonly queue: QueueEngine,
     private readonly rateLimiter: RateLimiterEngine,
     private readonly eventBus: EventBusService,
-  ) { }
+  ) {}
 
   async create(dto: CreateJobDto, clientId: string): Promise<Job> {
-    const { allowed, remaining, resetAt } = await this.rateLimiter.consume(clientId);
+    const { allowed, remaining, resetAt } =
+      await this.rateLimiter.consume(clientId);
     if (!allowed) {
       throw new BadRequestException({
         code: 'RATE_LIMIT_EXCEEDED',

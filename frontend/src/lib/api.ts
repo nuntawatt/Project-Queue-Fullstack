@@ -11,8 +11,7 @@ export const api = {
     create: (data: { type: string; priority?: string; payload: object; maxRetries?: number }) =>
       http.post<Job>('/jobs', data).then((r) => r.data),
     list: (status?: string) =>
-      http.get<Job[]>('/jobs', { params: { status } }).then((r) => r.data),
-    get: (id: string) => http.get<Job>(`/jobs/${id}`).then((r) => r.data),
+      http.get<Job[]>('/jobs', { params: status ? { status } : {} }).then((r) => r.data),
     cancel: (id: string) => http.delete(`/jobs/${id}`).then((r) => r.data),
     retry: (id: string) => http.post<Job>(`/jobs/${id}/retry`).then((r) => r.data),
   },

@@ -14,7 +14,7 @@
     "outDir": "./dist",
 
     "paths": {
-      "@queuely/shared": ["./shared/index.ts"]
+      "@queuely/shared": ["./shared/index"]
     },
     "incremental": true,
     "skipLibCheck": true,
