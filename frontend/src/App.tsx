@@ -22,7 +22,7 @@ export default function App() {
     // poll metrics every 5s
     const timer = setInterval(fetchMetrics, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [fetchJobs, fetchDlq, fetchMetrics])
 
   // handle real-time events
   const handleEvent = useCallback((event: JobEvent) => {
@@ -41,7 +41,7 @@ export default function App() {
     // refresh DLQ and metrics on relevant events
     if (event.event === 'job.dead') fetchDlq()
     fetchMetrics()
-  }, [])
+  }, [fetchDlq, fetchMetrics, upsertJob])
 
   useWebSocket(handleEvent)
 
@@ -49,7 +49,7 @@ export default function App() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: 'var(--bg)' }}>
-      <Sidebar view={view} onChange={(v) => setView(v as any)} dlqCount={dlqCount} />
+      <Sidebar view={view} onChange={(v) => setView(v as 'jobs' | 'dlq' | 'metrics')} dlqCount={dlqCount} />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <TopBar view={view} wsConnected={wsConnected} />

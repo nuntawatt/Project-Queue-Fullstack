@@ -5,7 +5,7 @@ interface Props {
     jobs: { total: number; byStatus: Record<string, number>; avgDurationMs: number }
     queue: { depth: Record<string, number>; total: number }
     dlq: { count: number }
-    workers: { total: number; busy: number; idle: number; workers: any[] }
+    workers: { total: number; busy: number; idle: number; workers: { id: string; busy: boolean }[] }
     circuits: Record<string, { state: string; failures: number }>
   }
 }
@@ -100,7 +100,7 @@ export const MetricsView: FC<Props> = ({ metrics }) => {
             <Pill label="Idle" value={workers.idle} color="#10B981" />
           </div>
           <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-            {(workers.workers as any[]).map((w) => (
+            {workers.workers.map((w) => (
               <div key={w.id} title={w.id} style={{
                 width: 28, height: 28, borderRadius: 6,
                 background: w.busy ? 'rgba(59,130,246,0.2)' : 'var(--surface)',

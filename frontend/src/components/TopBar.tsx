@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { useState, type FC } from 'react'
 import { useStore } from '../store/useStore'
 
 const JOB_TYPES = ['send_email', 'process_image']
@@ -27,7 +27,7 @@ export const TopBar: FC<TopBarProps> = ({ view, wsConnected }) => {
       const payload = JSON.parse(form.payload)
       await createJob({ type: form.type, priority: form.priority, payload })
       setOpen(false)
-    } catch (e) {
+    } catch {
       alert('Invalid payload JSON')
     } finally {
       setSubmitting(false)

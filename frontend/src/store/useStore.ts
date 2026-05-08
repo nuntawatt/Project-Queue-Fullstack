@@ -8,7 +8,7 @@ interface Metrics {
   jobs: { total: number; byStatus: Record<string, number>; avgDurationMs: number }
   queue: { depth: Record<string, number>; total: number }
   dlq: { count: number }
-  workers: { total: number; busy: number; idle: number; workers: unknown[] }
+  workers: { total: number; busy: number; idle: number; workers: { id: string; busy: boolean }[] }
   circuits: Record<string, { state: string; failures: number }>
 }
 

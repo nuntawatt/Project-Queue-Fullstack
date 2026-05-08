@@ -6,7 +6,7 @@ import {
   PRIORITY_SCORE,
   JobPriority,
 } from '@queuely/shared';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'crypto';
 
 const KEYS = {
   queue: 'queuely:queue',
