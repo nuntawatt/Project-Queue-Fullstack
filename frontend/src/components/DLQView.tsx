@@ -1,5 +1,5 @@
 import { type FC, useState } from 'react'
-import type { Job } from '@queuely/shared'
+import type { Job } from '@/types/job.types'
 import { useStore } from '../store/useStore'
 import { PriorityBadge } from './PriorityBadge'
 

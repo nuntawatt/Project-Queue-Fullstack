@@ -5,8 +5,16 @@ import { JobsModule } from '../jobs/jobs.module';
 import { DlqModule } from '../dlq/dlq.module';
 import { EventBusModule } from '../gateways/event-bus.module';
 
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { JobHistory } from '../jobs/entities/job-history.entity';
+
 @Module({
-  imports: [JobsModule, DlqModule, EventBusModule],
+  imports: [
+    TypeOrmModule.forFeature([JobHistory]),
+    JobsModule,
+    DlqModule,
+    EventBusModule,
+  ],
   providers: [WorkerPoolService, WorkerService],
   exports: [WorkerPoolService, WorkerService],
 })

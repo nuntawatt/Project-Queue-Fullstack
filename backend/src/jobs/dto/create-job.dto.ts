@@ -8,7 +8,7 @@ import {
   Max,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import * as shared from '../../../shared';
+import * as shared from '../../common/types/job.types';
 
 export class CreateJobDto {
   @ApiProperty({ example: 'send_email' })

@@ -5,7 +5,7 @@ import {
   CreateJobInput,
   PRIORITY_SCORE,
   JobPriority,
-} from '@queuely/shared';
+} from '../common/types/job.types';
 import { randomUUID as uuid } from 'crypto';
 
 const KEYS = {

@@ -1,5 +1,5 @@
 import { type FC, useState, useEffect } from 'react'
-import type { Job, JobStatus } from '@queuely/shared'
+import type { Job, JobStatus } from '@/types/job.types'
 import { useStore } from '../store/useStore'
 import { StatusPill } from './StatusPill'
 import { PriorityBadge } from './PriorityBadge'

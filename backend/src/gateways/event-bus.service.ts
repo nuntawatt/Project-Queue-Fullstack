@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { RedisService } from '../redis/redis.service';
-import { JobEvent } from '@queuely/shared';
+import { JobEvent } from '../common/types/job.types';
 
 const CHANNEL = 'queuely:events';
 type EventHandler = (event: JobEvent) => void;

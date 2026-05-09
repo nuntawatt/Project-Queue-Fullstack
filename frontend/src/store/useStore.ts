@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Job } from '@queuely/shared'
+import type { Job } from '@/types/job.types'
 import { api } from '../lib/api'
 
 export interface Metrics {

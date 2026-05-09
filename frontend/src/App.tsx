@@ -6,7 +6,7 @@ import { DLQView } from './components/DLQView'
 import { MetricsView } from './components/MetricsView'
 import { NewJobModal } from './components/NewJobModal'
 import { MetricCard } from './components/MetricCard'
-import type { JobEvent, Job } from '@queuely/shared'
+import type { JobEvent, Job } from '@/types/job.types'
 
 type View = 'jobs' | 'dlq' | 'metrics'
 

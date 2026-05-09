@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import type { JobPriority } from '@queuely/shared'
+import type { JobPriority } from '@/types/job.types'
 
 const COLORS: Record<JobPriority, string> = {
   critical: '#DC2626',

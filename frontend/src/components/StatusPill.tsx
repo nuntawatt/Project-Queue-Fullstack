@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import type { JobStatus } from '@queuely/shared'
+import type { JobStatus } from '@/types/job.types'
 
 const CONFIG: Record<JobStatus, { label: string; color: string; bg: string; dot?: boolean }> = {
   pending:   { label: 'Pending',   color: '#D97706', bg: '#FEF3C7' },

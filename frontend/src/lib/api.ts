@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Job } from '@queuely/shared'
+import type { Job } from '@/types/job.types'
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1',

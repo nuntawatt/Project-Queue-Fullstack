@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      '@queuely/shared': path.resolve(__dirname, 'src/shared/index.ts'),
+      '@': path.resolve(__dirname, './src'),
     },
   },
 })

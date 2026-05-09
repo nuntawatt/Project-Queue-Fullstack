@@ -8,7 +8,7 @@ import { QueueEngine } from '../core/queue.engine';
 import { RateLimiterEngine } from '../core/rate-limiter.engine';
 import { EventBusService } from '../gateways/event-bus.service';
 import { CreateJobDto } from './dto/create-job.dto';
-import { Job } from '@queuely/shared';
+import { Job } from '../common/types/job.types';
 
 @Injectable()
 export class JobsService {

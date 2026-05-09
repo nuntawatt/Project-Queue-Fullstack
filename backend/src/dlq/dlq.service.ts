@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { RedisService } from '../redis/redis.service';
 import { QueueEngine } from '../core/queue.engine';
-import { Job } from '@queuely/shared';
+import { Job } from '../common/types/job.types';
 
 const DLQ_KEY = 'queuely:dlq';
 

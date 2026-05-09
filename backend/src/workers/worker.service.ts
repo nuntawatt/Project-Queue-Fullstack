@@ -4,7 +4,7 @@ import { QueueEngine } from '../core/queue.engine';
 import { CircuitBreakerEngine } from '../core/circuit-breaker.engine';
 import { EventBusService } from '../gateways/event-bus.service';
 import { DlqService } from '../dlq/dlq.service';
-import { Job } from '@queuely/shared';
+import { Job } from '../common/types/job.types';
 import { emailHandler } from './handlers/email.handler';
 import { imageHandler } from './handlers/image.handler';
 
@@ -16,6 +16,10 @@ const HANDLERS: Record<
   process_image: imageHandler,
 };
 
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { JobHistory } from '../jobs/entities/job-history.entity';
+
 @Injectable()
 export class WorkerService {
   private readonly logger = new Logger(WorkerService.name);
@@ -26,6 +30,8 @@ export class WorkerService {
     private readonly eventBus: EventBusService,
     private readonly dlq: DlqService,
     config: ConfigService,
+    @InjectRepository(JobHistory)
+    private readonly jobHistoryRepo: Repository<JobHistory>,
   ) {
     this.breaker = new CircuitBreakerEngine(
       config.get<number>('circuitBreaker.failureThreshold')!,
@@ -97,6 +103,32 @@ export class WorkerService {
           timestamp: Date.now(),
         });
       }
+    }
+
+    // Save to PostgreSQL history after completion or death
+    if (job.status === 'completed' || job.status === 'dead') {
+      this.saveJobHistory(job).catch((err: unknown) =>
+        this.logger.error(
+          `Failed to save job history: ${err instanceof Error ? err.message : String(err)}`,
+        ),
+      );
+    }
+  }
+
+  private async saveJobHistory(job: Job) {
+    try {
+      await this.jobHistoryRepo.save({
+        id: job.id,
+        type: job.type,
+        priority: job.priority,
+        status: job.status,
+        payload: job.payload,
+        error: job.lastError ?? null,
+        startedAt: job.startedAt ? new Date(job.startedAt) : null,
+        completedAt: job.completedAt ? new Date(job.completedAt) : null,
+      });
+    } catch {
+      // Ignored if table doesn't exist yet
     }
   }
 

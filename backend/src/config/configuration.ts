@@ -10,6 +10,14 @@ export default () => ({
     password: process.env.REDIS_PASSWORD,
   },
 
+  database: {
+    host: process.env.DB_HOST ?? 'localhost',
+    port: parseInt(process.env.DB_PORT ?? '5432', 10),
+    username: process.env.DB_USERNAME ?? 'postgres',
+    password: process.env.DB_PASSWORD ?? 'postgres',
+    database: process.env.DB_DATABASE ?? 'queue',
+  },
+
   worker: {
     concurrency: parseInt(process.env.WORKER_CONCURRENCY ?? '5', 10),
     pollIntervalMs: parseInt(process.env.WORKER_POLL_INTERVAL_MS ?? '500', 10),
