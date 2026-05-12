@@ -1,5 +1,10 @@
 import { Controller, Get, Post, Delete, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiSecurity } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiSecurity,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { DlqService } from './dlq.service';
 
 @ApiTags('Dead Letter Queue')
@@ -10,6 +15,14 @@ export class DlqController {
 
   @Get()
   @ApiOperation({ summary: 'ดู job ทั้งหมดใน DLQ' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all dlq jobs successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   findAll() {
     return this.dlq.findAll();
   }

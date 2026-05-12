@@ -19,6 +19,7 @@ export class QueueEngine {
 
   constructor(private readonly redis: RedisService) {}
 
+  // เพิ่ม job ใหม่ลงในคิวตามระดับความสำคัญ
   async enqueue(input: CreateJobInput): Promise<Job> {
     const job: Job = {
       id: uuid(),
@@ -43,21 +44,25 @@ export class QueueEngine {
     return job;
   }
 
+  // ดึง job ที่มีความสำคัญสูงสุดออกจากคิวเพื่อนำไปประมวลผล
   async dequeue(): Promise<Job | null> {
     const result = await this.redis.getClient().zpopmax(KEYS.queue);
     if (!result?.length) return null;
     return this.findById(result[0]);
   }
 
+  // ค้นหาข้อมูล job จาก Redis ตาม ID
   async findById(id: string): Promise<Job | null> {
     const raw = await this.redis.getClient().get(KEYS.job(id));
     return raw ? (JSON.parse(raw) as Job) : null;
   }
 
+  // บันทึกหรืออัปเดตข้อมูล job ใน Redis
   async save(job: Job): Promise<void> {
     await this.redis.getClient().set(KEYS.job(job.id), JSON.stringify(job));
   }
 
+  // นำ job กลับเข้าคิวเพื่อรอประมวลผลใหม่ (requeue)
   async requeue(job: Job): Promise<void> {
     const pipeline = this.redis.getClient().pipeline();
     pipeline.set(KEYS.job(job.id), JSON.stringify(job));
@@ -65,6 +70,7 @@ export class QueueEngine {
     await pipeline.exec();
   }
 
+  // ดึงรายการ job ทั้งหมดจาก Redis (กรองตามสถานะถ้ามี)
   async list(status?: string, limit = 100): Promise<Job[]> {
     const keys: string[] = [];
     let cursor = '0';
@@ -89,6 +95,7 @@ export class QueueEngine {
       .slice(0, limit);
   }
 
+  // ยกเลิก job ที่กำลังรออยู่ในคิว
   async cancel(id: string): Promise<boolean> {
     const job = await this.findById(id);
     if (!job || job.status !== 'pending') return false;
@@ -103,6 +110,7 @@ export class QueueEngine {
     return true;
   }
 
+  // นับจำนวน job ในคิวแยกตามระดับความสำคัญ
   async getQueueDepth(): Promise<Record<JobPriority, number>> {
     const items = await this.redis
       .getClient()
