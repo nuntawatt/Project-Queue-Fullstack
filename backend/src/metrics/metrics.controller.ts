@@ -1,5 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiSecurity } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiSecurity,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { MetricsService } from './metrics.service';
 
 @ApiTags('Metrics')
@@ -10,6 +15,9 @@ export class MetricsController {
 
   @Get()
   @ApiOperation({ summary: 'ดู system metrics ทั้งหมด' })
+  @ApiResponse({ status: 200, description: 'Get all metrics successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
   getSummary() {
     return this.metrics.getSummary();
   }
