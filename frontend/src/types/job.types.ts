@@ -1,7 +1,7 @@
 export type JobPriority = 'low' | 'normal' | 'high' | 'critical';
 export type JobStatus = 'pending' | 'running' | 'completed' | 'failed' | 'dead';
 
-export const PRIORITY_SCORE: Record<JobPriority, number> = {
+export const PRIORITY_ORDER: Record<JobPriority, number> = {
   low: 10,
   normal: 20,
   high: 30,

@@ -1,0 +1,45 @@
+'use client';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { dlqService } from '@/services/dlq.service';
+import { toast } from 'sonner';
+
+export function useReplayDlq() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => dlqService.replay(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dlq'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['metrics'] });
+      toast.success('Job replayed from DLQ');
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+}
+
+export function useRemoveDlq() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => dlqService.remove(id),
+    onMutate: async (id) => {
+      // Optimistic update — remove from list immediately
+      await queryClient.cancelQueries({ queryKey: ['dlq'] });
+      const previous = queryClient.getQueryData(['dlq']);
+      queryClient.setQueryData(['dlq'], (old: unknown[]) =>
+        old?.filter((j: { id: string }) => j.id !== id),
+      );
+      return { previous };
+    },
+    onError: (_err, _id, context) => {
+      queryClient.setQueryData(['dlq'], context?.previous);
+      toast.error('Failed to remove job');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['dlq'] });
+      queryClient.invalidateQueries({ queryKey: ['metrics'] });
+    },
+  });
+}
