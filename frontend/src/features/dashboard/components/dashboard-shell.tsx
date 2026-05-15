@@ -12,8 +12,8 @@ interface DashboardShellProps {
 }
 
 /**
- * Dashboard shell — provides the top bar, navigation,
- * metric strip, and WebSocket connection.
+ * โครงสร้างหลักของ Dashboard — จัดการแถบด้านบน (Top bar), ระบบนำทาง (Nav),
+ * แถบแสดงสถานะข้อมูล (Metric strip), และการเชื่อมต่อ WebSocket
  */
 export function DashboardShell({ children, actions }: DashboardShellProps) {
   // Establish WebSocket connection at dashboard level

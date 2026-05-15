@@ -31,17 +31,18 @@ export class ApiKeyGuard implements CanActivate {
       throw new UnauthorizedException('Missing API key');
     }
 
-    // 1. Check Master Key from .env
+    // 1. ตรวจสอบกับ Master Key ใน .env (ถ้าตรงกันก็ให้ผ่านเลย)
     const expectedKey = Buffer.from(this.config.get<string>('apiKey') ?? '');
     const actualKeyBuf = Buffer.from(actualKeyString);
 
     if (expectedKey.length > 0 && expectedKey.length === actualKeyBuf.length) {
+      // ใช้ timingSafeEqual เพื่อป้องกัน Timing Attack
       if (timingSafeEqual(expectedKey, actualKeyBuf)) {
         return true;
       }
     }
 
-    // 2. Check Database for valid API Key
+    // 2. ตรวจสอบกับ API Key ที่อยู่ในฐานข้อมูล (ถ้ามีสิทธิ์ก็ให้ผ่าน)
     try {
       const apiKeyRecord = await this.apiKeyRepo.findOne({
         where: { key: actualKeyString },
@@ -51,7 +52,7 @@ export class ApiKeyGuard implements CanActivate {
         return true;
       }
     } catch {
-      // Database might not be ready or table not created yet
+      // จับ Error เผื่อฐานข้อมูลยังไม่พร้อมหรือตารางยังไม่ถูกสร้าง
     }
 
     throw new UnauthorizedException('Invalid API key');

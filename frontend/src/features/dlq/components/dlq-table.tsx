@@ -74,6 +74,7 @@ export function DlqTable({ jobs, isLoading }: DlqTableProps) {
 }
 
 function DlqRow({ job }: { job: Job }) {
+  // Hook สำหรับสั่งนำ Job กลับไปรันใหม่ หรือลบทิ้ง
   const replayDlq = useReplayDlq();
   const removeDlq = useRemoveDlq();
 

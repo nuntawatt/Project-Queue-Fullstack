@@ -20,7 +20,12 @@ export class JobsService {
     private readonly eventBus: EventBusService,
   ) {}
 
+  /**
+   * สร้าง Job ใหม่และนำเข้า Queue พร้อมระบบจำกัด Request (Rate Limit)
+   * ป้องกันการสแปมสร้าง Job จาก Client ID เดียวกัน
+   */
   async create(dto: CreateJobDto, clientId: string): Promise<Job> {
+    // 1. ตรวจสอบโควต้าการเรียก API (Rate Limit) ของผู้ใช้งานรายนี้
     const { allowed, remaining, resetAt } =
       await this.rateLimiter.consume(clientId);
     if (!allowed) {
@@ -32,6 +37,7 @@ export class JobsService {
       });
     }
 
+    // 2. นำ Job เข้าคิว Redis ตามระดับความสำคัญที่ระบุมา
     const job = await this.queue.enqueue({
       type: dto.type,
       priority: dto.priority,
@@ -39,6 +45,7 @@ export class JobsService {
       maxRetries: dto.maxRetries,
     });
 
+    // 3. กระจาย Event แจ้งเตือนไปยัง WebSocket ว่ามี Job ใหม่ถูกสร้างขึ้น
     await this.eventBus.publish({
       event: 'job.created',
       jobId: job.id,
@@ -49,6 +56,9 @@ export class JobsService {
     return job;
   }
 
+  /**
+   * ดึงข้อมูล Job ทั้งหมด (สามารถกรองตามสถานะได้)
+   */
   async findAll(status?: string): Promise<Job[]> {
     return this.queue.list(status);
   }
@@ -59,6 +69,9 @@ export class JobsService {
     return job;
   }
 
+  /**
+   * ยกเลิก Job (ทำได้เฉพาะ Job ที่ยังรอทำงานอยู่ - Pending)
+   */
   async cancel(id: string): Promise<{ success: boolean }> {
     const cancelled = await this.queue.cancel(id);
     if (!cancelled)
@@ -66,11 +79,15 @@ export class JobsService {
     return { success: true };
   }
 
+  /**
+   * สร้าง Job เดิมใหม่อีกครั้งจาก Job ที่ทำงานล้มเหลว (Failed)
+   */
   async retry(id: string): Promise<Job> {
     const job = await this.findOne(id);
     if (job.status !== 'failed')
       throw new BadRequestException('Only failed jobs can be retried');
 
+    // สร้าง Job ใบใหม่โดยดึงข้อมูลเดิมจาก Job ที่พัง
     const retried = await this.queue.enqueue({
       type: job.type,
       priority: job.priority,

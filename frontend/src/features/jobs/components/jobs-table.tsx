@@ -25,8 +25,10 @@ const TABLE_HEADERS = [
 ] as const;
 
 export function JobsTable({ jobs, isLoading }: JobsTableProps) {
+  // สร้างตัวแปรเก็บเวลาปัจจุบันเพื่อเอาไปคำนวณระยะเวลา (Duration)
   const [now, setNow] = useState(() => Date.now());
 
+  // สั่งให้อัปเดตเวลาทุกๆ 1 วินาที เพื่อให้ตัวเลขวินาทีเดินแบบ Real-time
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
@@ -83,6 +85,7 @@ function JobRow({ job, now }: { job: Job; now: number }) {
   const retryJob = useRetryJob();
   const isBusy = cancelJob.isPending || retryJob.isPending;
 
+  // คำนวณระยะเวลาทำงาน (Duration) แบบสดๆ เทียบกับเวลาปัจจุบัน
   const duration = useMemo(() => {
     if (!job.startedAt) return '—';
     const end = job.completedAt ?? now;

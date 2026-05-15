@@ -6,12 +6,12 @@ import { Float, MeshDistortMaterial, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 
 /**
- * Core 3D scene — interactive floating mesh with mouse-tracking camera
- * and particle field for depth. Optimized for performance:
- * - Adaptive DPR
- * - Demand-based frameloop on hidden tabs
- * - Minimal geometry complexity
- * - Single environment probe
+ * ฉาก 3D หลัก — รูปทรงลอยตัวแบบโต้ตอบได้ พร้อมกล้องที่หันตามเมาส์
+ * และเอฟเฟกต์อนุภาค (Particle) เพื่อเพิ่มมิติความลึก ปรับแต่งเพื่อประสิทธิภาพขั้นสุด:
+ * - ปรับความละเอียดตามหน้าจออัตโนมัติ (Adaptive DPR)
+ * - หยุดรันเมื่อไม่ได้เปิดแท็บนี้ (Demand-based frameloop)
+ * - ใช้รูปทรงแบบเรียบง่าย ไม่กินทรัพยากร
+ * - แสงและเงาจาก Environment ตัวเดียว
  */
 function FloatingMesh() {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -22,7 +22,7 @@ function FloatingMesh() {
     meshRef.current.rotation.x += delta * 0.1;
     meshRef.current.rotation.y += delta * 0.15;
 
-    // Subtle mouse-follow for the mesh position
+    // ขยับรูปทรงตามเมาส์แบบนุ่มนวล
     meshRef.current.position.x = THREE.MathUtils.lerp(
       meshRef.current.position.x,
       mouse.x * 0.3,
@@ -52,7 +52,7 @@ function FloatingMesh() {
   );
 }
 
-/** Secondary accent sphere — adds depth */
+/** ทรงกลมลอยตัวรอง — ช่วยเพิ่มมิติให้ฉาก */
 function AccentSphere() {
   const meshRef = useRef<THREE.Mesh>(null);
 
@@ -77,7 +77,7 @@ function AccentSphere() {
   );
 }
 
-/** Particle field for ambient depth */
+/** อนุภาคเรืองแสงเพื่อสร้างบรรยากาศ */
 function ParticleField() {
   const count = 200;
   const [positions] = useState(() => {
@@ -119,7 +119,7 @@ function ParticleField() {
   );
 }
 
-/** Cinematic camera rig that follows mouse */
+/** ระบบกล้องเคลื่อนไหวที่คอยมองตามเมาส์ */
 function CameraRig() {
   const { pointer } = useThree();
 

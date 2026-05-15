@@ -17,7 +17,7 @@ export function makeQueryClient() {
   });
 }
 
-/** Singleton for browser — fresh instance on every SSR request */
+/** Singleton สำหรับฝั่ง browser — ป้องกันการสร้าง instance ใหม่ทุกครั้งที่ SSR ทำงาน */
 let browserQueryClient: QueryClient | undefined;
 
 export function getQueryClient() {

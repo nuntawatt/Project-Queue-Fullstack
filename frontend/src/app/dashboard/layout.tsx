@@ -6,9 +6,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * Dashboard layout — server component wrapper.
- * The actual shell (header, nav, WS) is a client component
- * rendered inside DashboardShellWrapper.
+ * Layout สำหรับหน้า Dashboard (Server Component)
+ * โครงสร้างหลัก (header, nav, websocket) จะถูกครอบด้วย Client Component
+ * ผ่าน DashboardShellWrapper เพื่อให้สามารถจัดการ state ฝั่ง client ได้
  */
 export default function DashboardLayout({
   children,

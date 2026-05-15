@@ -44,7 +44,11 @@ export class WorkerService {
     return this.breaker.getAll();
   }
 
+  /**
+   * กระบวนการรัน Job หลัก
+   */
   async process(job: Job, workerId: string): Promise<void> {
+    // 1. ตรวจสอบ Circuit Breaker ก่อนทำงาน ถ้าเปิดอยู่แปลว่าระบบปลายทางมีปัญหา ให้เอา Job กลับเข้าคิวไปก่อน
     if (!this.breaker.canExecute(job.type)) {
       job.status = 'pending';
       await this.queue.requeue(job);
@@ -62,9 +66,11 @@ export class WorkerService {
       timestamp: Date.now(),
     });
 
+    // 2. ส่งให้ Handler จัดการพร้อมระบบ Retry
     const result = await this.runWithBackoff(job);
 
     if (result.success) {
+      // 3.1 กรณีทำงานสำเร็จ: เปลี่ยนสถานะ, อัปเดตเบรกเกอร์ และส่ง Event
       job.status = 'completed';
       job.completedAt = Date.now();
       this.breaker.onSuccess(job.type);
@@ -78,10 +84,12 @@ export class WorkerService {
         timestamp: Date.now(),
       });
     } else {
+      // 3.2 กรณีทำงานพัง: อัปเดตเบรกเกอร์ และเช็คว่าพังเกินจำนวน Retry หรือยัง
       this.breaker.onFailure(job.type);
       job.lastError = result.error;
 
       if (job.retries >= job.maxRetries) {
+        // พังเกินโควต้า -> โยนเข้า DLQ (Dead Letter Queue)
         job.status = 'dead';
         await this.queue.save(job);
         await this.dlq.add(job);
@@ -105,7 +113,7 @@ export class WorkerService {
       }
     }
 
-    // Save to PostgreSQL history after completion or death
+    // 4. บันทึกประวัติลง Database ทันทีที่ทำงานเสร็จสิ้นหรือตาย (เพื่อเก็บ History)
     if (job.status === 'completed' || job.status === 'dead') {
       this.saveJobHistory(job).catch((err: unknown) =>
         this.logger.error(
@@ -132,6 +140,9 @@ export class WorkerService {
     }
   }
 
+  /**
+   * ระบบรัน Job ที่มี Exponential Backoff (รอเวลานานขึ้นเรื่อยๆ ก่อน Retry ครั้งต่อไป)
+   */
   private async runWithBackoff(
     job: Job,
   ): Promise<{ success: boolean; error?: string }> {
@@ -150,6 +161,7 @@ export class WorkerService {
         await this.queue.save(job);
 
         if (attempt < job.maxRetries) {
+          // คำนวณเวลาที่ต้องรอ (1s, 2s, 4s, 8s, ...) แบบ Exponential Backoff
           const delayMs = Math.pow(2, attempt) * 1000;
           this.logger.warn(
             `Job ${job.id} retry ${attempt + 1}/${job.maxRetries} in ${delayMs}ms`,

@@ -5,6 +5,10 @@ import { jobsService } from '@/services/jobs.service';
 import { toast } from 'sonner';
 import type { CreateJobInput } from '@/types/job.types';
 
+/**
+ * Hook สำหรับสร้าง Job ใหม่
+ * เมื่อสร้างเสร็จจะล้างแคชเพื่อให้ตารางแสดงข้อมูลล่าสุดทันที
+ */
 export function useCreateJob() {
   const queryClient = useQueryClient();
 
@@ -21,6 +25,9 @@ export function useCreateJob() {
   });
 }
 
+/**
+ * Hook สำหรับยกเลิก Job ที่กำลังรอทำงาน
+ */
 export function useCancelJob() {
   const queryClient = useQueryClient();
 
@@ -37,6 +44,9 @@ export function useCancelJob() {
   });
 }
 
+/**
+ * Hook สำหรับสั่งรัน Job ที่ Failed ใหม่อีกครั้ง
+ */
 export function useRetryJob() {
   const queryClient = useQueryClient();
 

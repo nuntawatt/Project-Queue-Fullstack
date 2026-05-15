@@ -13,11 +13,13 @@ export class EventBusService implements OnModuleInit {
   constructor(private readonly redis: RedisService) {}
 
   async onModuleInit() {
+    // 1. รับฟัง Event ทั้งหมดผ่าน Redis Pub/Sub แบบเรียลไทม์
     const sub = this.redis.getSubscriber();
     await sub.subscribe(CHANNEL);
     sub.on('message', (_, message) => {
       try {
         const event = JSON.parse(message) as JobEvent;
+        // 2. ส่ง Event ที่ได้รับต่อไปยัง Handler ทั้งหมดที่ลงทะเบียนไว้ (เช่น WebSocket Gateway)
         this.handlers.forEach((h) => h(event));
       } catch (err) {
         this.logger.error('Failed to parse event', err);
@@ -26,10 +28,16 @@ export class EventBusService implements OnModuleInit {
     this.logger.log(`Subscribed to channel: ${CHANNEL}`);
   }
 
+  /**
+   * ส่ง Event ใหม่เข้าไปในระบบ
+   */
   async publish(event: JobEvent): Promise<void> {
     await this.redis.getClient().publish(CHANNEL, JSON.stringify(event));
   }
 
+  /**
+   * ลงทะเบียนรับฟัง Event (ใช้โดย WebSocket Gateway เพื่อบรอดแคสต์ไปที่หน้า UI)
+   */
   subscribe(handler: EventHandler): () => void {
     this.handlers.push(handler);
     return () => {

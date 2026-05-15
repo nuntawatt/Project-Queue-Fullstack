@@ -2,11 +2,11 @@ import axios, { type AxiosError } from 'axios';
 import { APP_CONFIG } from '@/lib/constants';
 
 /**
- * Centralized HTTP client.
- * All API calls go through this instance so we get:
- * - Consistent base URL and auth header
- * - Centralized error interceptor
- * - Easy swap to different backends later
+ * ตัวจัดการ HTTP client กลางของระบบ
+ * API ทุกตัวจะถูกเรียกผ่าน instance นี้เพื่อให้:
+ * - จัดการ Base URL และ Auth header (API Key) ได้จากที่เดียว
+ * - มีระบบจัดการ Error ส่วนกลาง (Interceptor)
+ * - สามารถเปลี่ยน Backend ได้ง่ายในอนาคต
  */
 export const http = axios.create({
   baseURL: APP_CONFIG.api.baseUrl,
@@ -16,7 +16,7 @@ export const http = axios.create({
   timeout: 15_000,
 });
 
-// Response interceptor — normalize errors
+// Interceptor ขาตอบกลับ — จัดรูปแบบ Error ให้อ่านง่ายขึ้น
 http.interceptors.response.use(
   (response) => response,
   (error: AxiosError<{ message?: string }>) => {
@@ -25,7 +25,7 @@ http.interceptors.response.use(
       error.message ??
       'An unexpected error occurred';
 
-    // Re-throw with a clean message for UI consumption
+    // ส่ง Error กลับไปพร้อมข้อความที่อ่านง่ายขึ้นสำหรับให้ UI นำไปใช้
     return Promise.reject(new Error(message));
   },
 );

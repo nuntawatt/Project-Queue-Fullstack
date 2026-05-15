@@ -7,9 +7,9 @@ import { APP_CONFIG } from '@/lib/constants';
 import type { JobEvent } from '@/types/job.types';
 
 /**
- * Global WebSocket hook — connects once at the dashboard shell level.
- * On incoming events, invalidates relevant TanStack Query caches
- * so the UI updates automatically without manual state management.
+ * WebSocket Hook ส่วนกลาง — เชื่อมต่อครั้งเดียวที่ระดับ Dashboard
+ * เมื่อมี event เข้ามา จะทำการล้างแคช (invalidate) ของ TanStack Query ที่เกี่ยวข้อง
+ * เพื่อให้ UI ดึงข้อมูลใหม่อัตโนมัติโดยไม่ต้องจัดการ state เอง
  */
 export function useWebSocket() {
   const queryClient = useQueryClient();
@@ -20,7 +20,7 @@ export function useWebSocket() {
 
   const handleEvent = useCallback(
     (event: JobEvent) => {
-      // Invalidate relevant caches based on event type
+      // ล้างแคชที่เกี่ยวข้องตามประเภทของ event ที่ได้รับ
       queryClient.invalidateQueries({ queryKey: ['metrics'] });
 
       if (event.event.startsWith('job.')) {

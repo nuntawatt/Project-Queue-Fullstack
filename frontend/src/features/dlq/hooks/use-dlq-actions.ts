@@ -26,6 +26,7 @@ export function useRemoveDlq() {
   return useMutation({
     mutationFn: (id: string) => dlqService.remove(id),
     onMutate: async (id) => {
+      // Optimistic update — ทำการซ่อนข้อมูลจาก UI ทันทีโดยไม่ต้องรอให้ API ทำงานเสร็จ
       await queryClient.cancelQueries({ queryKey: ['dlq'] });
       const previous = queryClient.getQueryData<Job[]>(['dlq']);
       queryClient.setQueryData<Job[]>(['dlq'], (old) =>
@@ -34,6 +35,7 @@ export function useRemoveDlq() {
       return { previous };
     },
     onError: (_err, _id, context) => {
+      // หากเกิด Error ให้คืนค่าข้อมูลเดิมกลับมา
       queryClient.setQueryData(['dlq'], context?.previous);
       toast.error('Failed to remove job');
     },

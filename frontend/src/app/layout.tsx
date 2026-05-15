@@ -26,9 +26,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * Root layout — server component.
- * All client-side providers are wrapped in AppProviders
- * to keep this layout lightweight and SSR-compatible.
+ * โครงสร้างหลักของแอปพลิเคชัน (Root Layout) — เป็น Server Component
+ * Providers ทั้งหมดที่ต้องรันฝั่ง Client จะถูกแยกไปอยู่ใน AppProviders
+ * เพื่อให้ Root Layout นี้ทำงานได้เบาและรองรับ SSR อย่างเต็มรูปแบบ
  */
 export default function RootLayout({
   children,

@@ -4,6 +4,7 @@ import { useMetrics } from '@/features/metrics/hooks/use-metrics';
 import { MetricCard } from '@/components/shared/metric-card';
 
 export function MetricStrip() {
+  // ดึงข้อมูลภาพรวม (Metrics) จาก API อัตโนมัติ
   const { data: metrics } = useMetrics();
 
   if (!metrics) return null;

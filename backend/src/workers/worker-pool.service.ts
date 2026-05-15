@@ -30,6 +30,7 @@ export class WorkerPoolService implements OnModuleInit, OnModuleDestroy {
     this.logger.log(
       `Starting worker pool with concurrency=${this.concurrency}`,
     );
+    // สร้าง Worker ตามจำนวน Concurrency ที่กำหนด
     for (let i = 0; i < this.concurrency; i++) {
       this.workers.push(this.startWorker(`worker-${i + 1}`));
     }
@@ -43,12 +44,16 @@ export class WorkerPoolService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async startWorker(workerId: string) {
+    // ลูปดึงงานไปเรื่อยๆ จนกว่าแอปจะปิด (Graceful Shutdown)
     while (!this.isShuttingDown) {
       try {
+        // ดึงงานที่ความสำคัญสูงสุดออกจากคิว
         const job = await this.queue.dequeue();
         if (job) {
+          // หากมีงาน ให้ส่งต่อให้ WorkerService ประมวลผล
           await this.worker.process(job, workerId);
         } else {
+          // หากไม่มีงาน ให้พักรอชั่วคราว (Polling Interval) เพื่อลดการกิน CPU
           await new Promise((resolve) =>
             setTimeout(resolve, this.pollIntervalMs),
           );

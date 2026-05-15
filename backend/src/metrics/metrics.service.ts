@@ -13,18 +13,24 @@ export class MetricsService {
     private readonly worker: WorkerService,
   ) {}
 
+  /**
+   * ดึงข้อมูลภาพรวมของระบบเพื่อไปแสดงผลบนหน้า Dashboard (Metric Strip)
+   */
   async getSummary() {
+    // 1. ดึงข้อมูลจากระบบย่อยต่างๆ พร้อมกันเพื่อความรวดเร็ว
     const [jobs, queueDepth, dlqCount] = await Promise.all([
       this.queue.list(),
       this.queue.getQueueDepth(),
       this.dlq.count(),
     ]);
 
+    // 2. สรุปข้อมูลจำนวน Job แยกตามสถานะ
     const byStatus = jobs.reduce<Record<string, number>>((acc, j) => {
       acc[j.status] = (acc[j.status] ?? 0) + 1;
       return acc;
     }, {});
 
+    // 3. คำนวณระยะเวลาเฉลี่ยที่ใช้ในการประมวลผล Job ที่สำเร็จแล้ว
     const completed = jobs.filter(
       (j) => j.status === 'completed' && j.startedAt && j.completedAt,
     );

@@ -6,9 +6,8 @@ import { DashboardShell } from '@/features/dashboard/components/dashboard-shell'
 import { CreateJobDialog } from '@/features/jobs/components/create-job-dialog';
 
 /**
- * Client wrapper that provides dashboard chrome and the
- * create job button + dialog. Isolated so the layout stays
- * a server component.
+ * Client Wrapper ควบคุมโครงสร้างหน้า Dashboard และปุ่ม + Dialog "สร้าง Job ใหม่"
+ * แยกส่วนนี้ออกมาเพื่อให้ตัว layout หลักยังเป็น Server Component ได้
  */
 export function DashboardShellWrapper({
   children,

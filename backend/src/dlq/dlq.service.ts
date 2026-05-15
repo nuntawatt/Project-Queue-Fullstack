@@ -14,6 +14,9 @@ export class DlqService {
     private readonly queue: QueueEngine,
   ) {}
 
+  /**
+   * เพิ่ม Job ที่ตายแล้ว (รันใหม่จนครบโควต้าแล้วยังพัง) ลงใน DLQ (Dead Letter Queue)
+   */
   async add(job: Job): Promise<void> {
     await this.redis
       .getClient()
@@ -32,6 +35,9 @@ export class DlqService {
     return JSON.parse(raw) as Job;
   }
 
+  /**
+   * ดึง Job ออกจาก DLQ แล้วส่งกลับไปรันใหม่ในคิวปกติ (Replay)
+   */
   async replay(id: string): Promise<Job> {
     const dead = await this.findOne(id);
     const replayed = await this.queue.enqueue({
@@ -40,6 +46,7 @@ export class DlqService {
       payload: dead.payload,
       maxRetries: dead.maxRetries,
     });
+    // ลบออกจาก DLQ เมื่อนำกลับไปรันใหม่สำเร็จ
     await this.remove(id);
     this.logger.log(`Replayed DLQ job ${id} → new job ${replayed.id}`);
     return replayed;
