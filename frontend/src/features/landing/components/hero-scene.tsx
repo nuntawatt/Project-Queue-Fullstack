@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, MeshDistortMaterial, Environment } from '@react-three/drei';
 import * as THREE from 'three';
@@ -80,7 +80,7 @@ function AccentSphere() {
 /** Particle field for ambient depth */
 function ParticleField() {
   const count = 200;
-  const positions = useMemo(() => {
+  const [positions] = useState(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 12;
@@ -88,7 +88,7 @@ function ParticleField() {
       pos[i * 3 + 2] = (Math.random() - 0.5) * 8;
     }
     return pos;
-  }, []);
+  });
 
   const ref = useRef<THREE.Points>(null);
 
@@ -102,6 +102,7 @@ function ParticleField() {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
+          args={[positions, 3]}
           count={count}
           array={positions}
           itemSize={3}

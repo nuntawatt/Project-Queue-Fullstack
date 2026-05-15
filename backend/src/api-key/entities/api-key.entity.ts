@@ -8,17 +8,17 @@ import {
 @Entity('api_keys')
 export class ApiKey {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ unique: true })
-  key: string;
+  key!: string;
 
   @Column()
-  owner: string;
+  owner!: string;
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 }

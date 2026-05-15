@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const createJobSchema = z.object({
   type: z.string().min(1, 'Job type is required'),
-  priority: z.enum(['low', 'normal', 'high', 'critical']).default('normal'),
+  priority: z.enum(['low', 'normal', 'high', 'critical']),
   payload: z.string().refine(
     (val) => {
       try {
@@ -14,7 +14,7 @@ export const createJobSchema = z.object({
     },
     { message: 'Payload must be valid JSON' },
   ),
-  maxRetries: z.number().min(0).max(10).default(3),
+  maxRetries: z.number().min(0).max(10),
 });
 
 export type CreateJobFormValues = z.infer<typeof createJobSchema>;

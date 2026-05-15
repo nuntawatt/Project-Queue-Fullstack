@@ -15,7 +15,7 @@ export function useWebSocket() {
   const queryClient = useQueryClient();
   const setConnected = useConnectionStore((s) => s.setWsConnected);
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimer = useRef<ReturnType<typeof setTimeout>>();
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const activeRef = useRef(true);
 
   const handleEvent = useCallback(

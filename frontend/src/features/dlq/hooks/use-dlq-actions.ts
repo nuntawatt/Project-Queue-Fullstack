@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { dlqService } from '@/services/dlq.service';
 import { toast } from 'sonner';
+import type { Job } from '@/types/job.types';
 
 export function useReplayDlq() {
   const queryClient = useQueryClient();
@@ -25,11 +26,10 @@ export function useRemoveDlq() {
   return useMutation({
     mutationFn: (id: string) => dlqService.remove(id),
     onMutate: async (id) => {
-      // Optimistic update — remove from list immediately
       await queryClient.cancelQueries({ queryKey: ['dlq'] });
-      const previous = queryClient.getQueryData(['dlq']);
-      queryClient.setQueryData(['dlq'], (old: unknown[]) =>
-        old?.filter((j: { id: string }) => j.id !== id),
+      const previous = queryClient.getQueryData<Job[]>(['dlq']);
+      queryClient.setQueryData<Job[]>(['dlq'], (old) =>
+        old?.filter((j) => j.id !== id),
       );
       return { previous };
     },
